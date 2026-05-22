@@ -1,0 +1,65 @@
+<?= $this->include('Backend/Template/header'); ?>
+<?= $this->include('Backend/Template/sidebar'); ?>
+
+<div class="row">
+    <ol class="breadcrumb">
+        <li><a href="<?= base_url('dashboard'); ?>"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li class="active">Transaksi</li>
+    </ol>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Data Transaksi</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a href="<?= base_url('admin/transaksi-step1'); ?>" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-plus"></span> Transaksi Baru
+                </a>
+            </div>
+            <div class="panel-body">
+                <table data-toggle="table"
+                    data-search="true"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-loading-template=""
+                    class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No Transaksi</th>
+                            <th>Pengunjung</th>
+                            <th>Tanggal</th>
+                            <th>Total Bayar</th>
+                            <th>Status</th>
+                            <th>QR Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($dataTransaksi as $trx) : ?>
+                            <tr>
+                                <td><?= $trx['no_transaksi']; ?></td>
+                                <td><?= $trx['nama_pengunjung']; ?></td>
+                                <td><?= $trx['tgl_transaksi']; ?></td>
+                                <td>Rp <?= number_format($trx['total_bayar'], 0, ',', '.'); ?></td>
+                                <td><?= $trx['status']; ?></td>
+                                <td>
+                                    <?php if ($trx['qr_code']) : ?>
+                                        <img src="<?= base_url($trx['qr_code']); ?>" width="50" alt="QR Code <?= esc($trx['no_transaksi']); ?>">
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<?= $this->include('Backend/Template/footer'); ?>
