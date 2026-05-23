@@ -110,20 +110,32 @@ var randomScalingFactor = function(){ return Math.round(Math.random()*1000)};
 	
 				];
 
-window.onload = function(){
-	var chart1 = document.getElementById("line-chart").getContext("2d");
-	window.myLine = new Chart(chart1).Line(lineChartData, {
-		responsive: true
-	});
-	var chart2 = document.getElementById("bar-chart").getContext("2d");
-	window.myBar = new Chart(chart2).Bar(barChartData, {
-		responsive : true
-	});
-	var chart3 = document.getElementById("doughnut-chart").getContext("2d");
-	window.myDoughnut = new Chart(chart3).Doughnut(doughnutData, {responsive : true
-	});
-	var chart4 = document.getElementById("pie-chart").getContext("2d");
-	window.myPie = new Chart(chart4).Pie(pieData, {responsive : true
-	});
-	
-};
+window.addEventListener('load', function(){
+	var chart1El = document.getElementById("line-chart");
+	if (chart1El) {
+		var chart1 = chart1El.getContext("2d");
+		window.myLine = new Chart(chart1).Line(lineChartData, {
+			responsive: true
+		});
+	}
+
+	var chart2El = document.getElementById("bar-chart");
+	if (chart2El) {
+		var chart2 = chart2El.getContext("2d");
+		window.myBar = new Chart(chart2).Bar(barChartData, {
+			responsive : true
+		});
+	}
+
+	var chart3El = document.getElementById("doughnut-chart");
+	if (chart3El) {
+		var chart3 = chart3El.getContext("2d");
+		window.myDoughnut = new Chart(chart3).Doughnut(doughnutData, {responsive : true});
+	}
+
+	var chart4El = document.getElementById("pie-chart");
+	if (chart4El) {
+		var chart4 = chart4El.getContext("2d");
+		window.myPie = new Chart(chart4).Pie(pieData, {responsive : true});
+	}
+});

@@ -126,11 +126,37 @@ class Admin extends BaseController
         $totalTransaksi = $db->table('tbl_transaksi')
             ->countAllResults();  // transaksi biasanya tidak dihapus
 
+        // Grafik transaksi 7 hari terakhir
+        $grafikLabels = [];
+        $grafikData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $ts = strtotime("-{$i} days");
+            $key = date('Y-m-d', $ts);
+            $grafikLabels[$key] = date('d M', $ts);
+            $grafikData[$key] = 0;
+        }
+
+        $grafikTransaksi = $db->table('tbl_transaksi')
+            ->select("DATE_FORMAT(tgl_transaksi, '%Y-%m-%d') AS hari, COUNT(*) AS total")
+            ->where('tgl_transaksi >=', date('Y-m-d', strtotime('-6 days')))
+            ->groupBy('hari')
+            ->orderBy('hari', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        foreach ($grafikTransaksi as $row) {
+            if (isset($grafikData[$row['hari']])) {
+                $grafikData[$row['hari']] = (int)$row['total'];
+            }
+        }
+
         $data = [
             'totalKategori'   => $totalKategori,
             'totalDestinasi'  => $totalDestinasi,
             'totalPengunjung' => $totalPengunjung,
-            'totalTransaksi'  => $totalTransaksi
+            'totalTransaksi'  => $totalTransaksi,
+            'grafikLabels'    => array_values($grafikLabels),
+            'grafikData'      => array_values($grafikData)
         ];
 
         return view('backend/dashboard_admin', $data);
