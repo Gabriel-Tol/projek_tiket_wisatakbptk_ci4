@@ -14,8 +14,9 @@ class M_Transaksi extends Model
     public function getDataTransaksi($where = false)
     {
         $builder = $this->db->table($this->table);
-        $builder->select('tbl_transaksi.*, tbl_pengunjung.nama_pengunjung');
+        $builder->select('tbl_transaksi.*, tbl_pengunjung.nama_pengunjung, tbl_destinasi.nama_destinasi');
         $builder->join('tbl_pengunjung', 'tbl_pengunjung.id_pengunjung = tbl_transaksi.id_pengunjung', 'LEFT');
+        $builder->join('tbl_destinasi', 'tbl_destinasi.id_destinasi = tbl_transaksi.id_destinasi', 'LEFT');
         if ($where) {
             $builder->where($where);
         }

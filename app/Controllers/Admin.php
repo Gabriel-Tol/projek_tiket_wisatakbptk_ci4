@@ -60,6 +60,45 @@ class Admin extends BaseController
         }
         return view('backend/login');
     }
+    public function register()
+    {
+        return view('backend/register');
+    }
+
+    public function simpan_registrasi()
+    {
+        $nama     = $this->request->getPost('nama');
+        $email    = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+
+        if (empty($nama) || empty($email) || empty($password)) {
+            session()->setFlashdata('error', 'Semua field wajib diisi!');
+            return redirect()->to('/register');
+        }
+
+        // Cek apakah email sudah terdaftar
+        $existing = $this->modelPengunjung->getDataPengunjung(['email' => $email]);
+        if ($existing) {
+            session()->setFlashdata('error', 'Email sudah terdaftar!');
+            return redirect()->to('/register');
+        }
+
+        $data = [
+            'id_pengunjung'   => $this->modelPengunjung->autoNumber(),
+            'nama_pengunjung' => $nama,
+            'email'           => $email,
+            'password'        => password_hash($password, PASSWORD_BCRYPT),
+            'no_hp'           => '', // Default empty
+            'alamat'          => '', // Default empty
+            'created_at'      => date('Y-m-d H:i:s'),
+            'updated_at'      => date('Y-m-d H:i:s'),
+            'is_delete'       => '0'
+        ];
+
+        $this->modelPengunjung->saveDataPengunjung($data);
+        session()->setFlashdata('success', 'Registrasi berhasil! Silakan login.');
+        return redirect()->to('/login');
+    }
     public function autentikasi()
     {
         $email    = $_POST['email']    ?? '';
@@ -67,7 +106,7 @@ class Admin extends BaseController
 
         if (empty($email) || empty($password)) {
             session()->setFlashdata('error', 'Email dan Password wajib diisi!');
-            return redirect()->to('/');
+            return redirect()->to('/login');
         }
 
         $pengunjung = $this->modelPengunjung->getDataPengunjung([
@@ -78,12 +117,12 @@ class Admin extends BaseController
         // DEBUG
         if (!$pengunjung) {
             session()->setFlashdata('error', 'Email tidak ditemukan');
-            return redirect()->to('/');
+            return redirect()->to('/login');
         }
 
         if (!password_verify($password, $pengunjung['password'])) {
             session()->setFlashdata('error', 'Password salah');
-            return redirect()->to('/');
+            return redirect()->to('/login');
         }
 
         // Jika cocok
