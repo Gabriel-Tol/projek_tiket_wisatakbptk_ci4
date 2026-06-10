@@ -21,7 +21,8 @@
                         </div>
                         <div class="col-xs-6 text-right">
                             <p class="text-muted small"><strong>STATUS</strong></p>
-                            <span class="label label-success" style="padding: 8px 15px; font-size: 12px;">BERHASIL</span>
+                            <?php $labelClass = ($transaksi['status'] === 'Berhasil') ? 'label-success' : 'label-warning'; ?>
+                            <span class="label <?= $labelClass ?>" style="padding: 8px 15px; font-size: 12px;"><?= strtoupper($transaksi['status']) ?></span>
                         </div>
                     </div>
 
@@ -63,7 +64,7 @@
                 </div>
                 <div class="col-md-4 text-center" style="background: #fbfcfd; padding: 40px 20px;">
                     <div style="background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: inline-block;">
-                        <img src="<?= base_url('Assets/qrcode/' . $transaksi['qr_code']) ?>" width="180">
+                        <img src="<?= base_url($transaksi['qr_code']) ?>" width="180">
                     </div>
                     <p class="text-muted small" style="margin-top: 20px;">Scan QR Code ini di gerbang masuk</p>
                     <h4 style="font-weight: bold;"><?= $transaksi['no_transaksi'] ?></h4>

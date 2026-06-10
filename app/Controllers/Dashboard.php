@@ -35,7 +35,7 @@ class Dashboard extends BaseController
         }
 
         $data = [
-            'title'         => 'Dashboard Visitor',
+            'title'         => 'Dashboard',
             'totalTiket'    => $totalTiket,
             'totalBerhasil' => $totalBerhasil,
             'recentHistory' => array_slice($allTransaksi, 0, 5),

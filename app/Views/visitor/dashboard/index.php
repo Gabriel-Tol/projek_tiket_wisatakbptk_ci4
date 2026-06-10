@@ -73,7 +73,8 @@
                                         <td><?= $row['nama_destinasi'] ?></td>
                                         <td><?= date('d/m/Y', strtotime($row['tanggal_kunjungan'])) ?></td>
                                         <td>
-                                            <span class="label label-success"><?= strtoupper($row['status']) ?></span>
+                                            <?php $lbl = ($row['status'] === 'Berhasil') ? 'label-success' : (($row['status'] === 'Menunggu Konfirmasi') ? 'label-warning' : 'label-default'); ?>
+                                            <span class="label <?= $lbl ?>"><?= strtoupper($row['status']) ?></span>
                                         </td>
                                         <td class="text-right">
                                             <a href="<?= base_url('booking/success/' . $row['no_transaksi']) ?>" class="btn btn-primary btn-xs">Detail</a>

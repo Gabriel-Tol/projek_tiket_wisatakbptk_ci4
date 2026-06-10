@@ -37,6 +37,7 @@
                                 <th>Total Bayar</th>
                                 <th>Status</th>
                                 <th>QR Code</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,10 +47,32 @@
                                     <td><?= $trx['nama_pengunjung']; ?></td>
                                     <td><?= $trx['tgl_transaksi']; ?></td>
                                     <td>Rp <?= number_format($trx['total_bayar'], 0, ',', '.'); ?></td>
-                                    <td><?= $trx['status']; ?></td>
+                                    <td>
+                                        <?php $status = $trx['status']; ?>
+                                        <?php if ($status === 'Berhasil' || $status === 'Sukses') : ?>
+                                            <span class="label label-success"><?= $status; ?></span>
+                                        <?php elseif ($status === 'Menunggu Konfirmasi' || $status === 'Pending') : ?>
+                                            <span class="label label-warning"><?= $status; ?></span>
+                                        <?php elseif ($status === 'Batal') : ?>
+                                            <span class="label label-danger"><?= $status; ?></span>
+                                        <?php else : ?>
+                                            <?= $status; ?>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <?php if ($trx['qr_code']) : ?>
                                             <img src="/<?= $trx['qr_code']; ?>" width="50">
+                                        <?php else : ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($trx['status'] === 'Menunggu Konfirmasi') : ?>
+                                            <a href="<?= base_url('admin/konfirmasi-transaksi/' . $trx['no_transaksi']); ?>" class="btn btn-success btn-sm" onclick="return confirm('Konfirmasi transaksi <?= $trx['no_transaksi']; ?>?')">
+                                                <span class="glyphicon glyphicon-ok"></span> Konfirmasi
+                                            </a>
+                                        <?php else : ?>
+                                            <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

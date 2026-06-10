@@ -34,7 +34,7 @@
                     <td width="50%" align="right">
                         <div class="info-row">
                             <div class="label">Status</div>
-                            <div class="value" style="color: #8ad919;">BERHASIL</div>
+                            <div class="value" style="color: <?= ($transaksi['status'] === 'Berhasil') ? '#8ad919' : '#f0ad4e' ?>;"><?= strtoupper($transaksi['status']) ?></div>
                         </div>
                     </td>
                 </tr>
@@ -78,7 +78,7 @@
         </div>
         <div class="footer">
             <div class="qr-section">
-                <img src="<?= FCPATH . 'Assets/qrcode/' . $transaksi['qr_code'] ?>" class="qr-code">
+                <img src="<?= FCPATH . $transaksi['qr_code'] ?>" class="qr-code">
                 <p style="margin-top: 10px; font-size: 12px; color: #777;">Tunjukkan QR Code ini kepada petugas di lokasi wisata.</p>
             </div>
             <p style="font-size: 10px; color: #999; margin-top: 20px;">Diterbitkan pada: <?= date('d/m/Y H:i') ?> | &copy; Wisata CI4</p>

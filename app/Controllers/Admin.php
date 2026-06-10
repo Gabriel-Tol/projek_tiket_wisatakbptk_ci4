@@ -610,7 +610,7 @@ class Admin extends BaseController
             'id_pengunjung' => $idPengunjung,
             'tgl_transaksi' => date('Y-m-d'),
             'total_bayar'   => $totalBayar,
-            'status'        => 'Sukses',
+            'status'        => 'Berhasil',
             'id_admin'      => session()->get('id_pengunjung') // admin yang login
         ]);
 
@@ -638,6 +638,42 @@ class Admin extends BaseController
             session()->setFlashdata('success', 'Transaksi berhasil, tetapi QR Code gagal dibuat.');
         }
 
+        return redirect()->to('/admin/master-transaksi');
+    }
+
+    public function konfirmasi_transaksi($noTransaksi)
+    {
+        if (!session()->get('is_login')) return redirect()->to('/');
+
+        $transaksi = $this->modelTransaksi->getDataTransaksi(['no_transaksi' => $noTransaksi]);
+        if (empty($transaksi)) {
+            session()->setFlashdata('error', 'Transaksi tidak ditemukan.');
+            return redirect()->to('/admin/master-transaksi');
+        }
+
+        $transaksi = $transaksi[0];
+
+        // Only confirm jika status masih 'Menunggu Konfirmasi'
+        if ($transaksi['status'] !== 'Menunggu Konfirmasi') {
+            session()->setFlashdata('error', 'Transaksi sudah dikonfirmasi sebelumnya.');
+            return redirect()->to('/admin/master-transaksi');
+        }
+
+        // Generate QR Code khas admin (dengan prefix "Transaksi:")
+        $qrCodePath = $this->generateTransaksiQrCode($noTransaksi);
+
+        $dataUpdate = [
+            'status'   => 'Berhasil',
+            'id_admin' => session()->get('id_pengunjung'),
+        ];
+
+        if ($qrCodePath) {
+            $dataUpdate['qr_code'] = $qrCodePath;
+        }
+
+        $this->modelTransaksi->updateStatusTransaksi($dataUpdate, ['no_transaksi' => $noTransaksi]);
+
+        session()->setFlashdata('success', 'Transaksi ' . $noTransaksi . ' berhasil dikonfirmasi.');
         return redirect()->to('/admin/master-transaksi');
     }
 

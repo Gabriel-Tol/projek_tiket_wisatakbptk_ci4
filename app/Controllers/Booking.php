@@ -74,7 +74,7 @@ class Booking extends BaseController
             'tanggal_kunjungan' => $this->request->getPost('tanggal_kunjungan'),
             'jumlah_tiket'      => $jumlahTiket,
             'total_bayar'       => $totalBayar,
-            'status'            => 'Berhasil', // Kita set Berhasil untuk simulasi sesuai PRD "Setelah transaksi berhasil"
+            'status'            => 'Menunggu Konfirmasi',
             'created_at'        => date('Y-m-d H:i:s'),
         ];
 
@@ -121,7 +121,7 @@ class Booking extends BaseController
 
         $result->saveToFile($filePath);
 
-        return $fileName;
+        return 'Assets/qrcode/' . $fileName;
     }
 
     public function download_pdf($noTransaksi)

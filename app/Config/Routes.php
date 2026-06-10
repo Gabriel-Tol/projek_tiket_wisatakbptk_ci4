@@ -81,6 +81,9 @@ $routes->post('/admin/tambah-temp',          'Admin::tambah_temp');
 $routes->get('/admin/hapus-temp/(:any)',     'Admin::hapus_temp/$1');
 $routes->get('/admin/simpan-transaksi',      'Admin::simpan_transaksi');
 
+// Konfirmasi Transaksi
+$routes->get('/admin/konfirmasi-transaksi/(:any)', 'Admin::konfirmasi_transaksi/$1');
+
 // Laporan Pemesanan
 $routes->get('/admin/laporan-pemesanan',  'Admin::laporan_pemesanan');
 $routes->post('/admin/filter-laporan',    'Admin::filter_laporan');

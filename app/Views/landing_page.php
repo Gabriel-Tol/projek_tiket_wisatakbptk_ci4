@@ -69,7 +69,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Tentang Wisata" class="img-fluid rounded-4 shadow">
+                    <img src="<?= base_url('Assets/tugu%20katulistiwa.jpg') ?>" alt="Tugu Katulistiwa" class="img-fluid rounded-4 shadow">
                 </div>
                 <div class="col-lg-6 mt-4 mt-lg-0" data-aos="fade-left">
                     <h2 class="section-title">Tentang Sistem Kami</h2>
