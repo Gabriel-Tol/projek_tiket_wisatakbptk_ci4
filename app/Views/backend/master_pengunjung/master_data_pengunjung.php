@@ -1,5 +1,5 @@
-<?= $this->include('Backend/Template/header'); ?>
-<?= $this->include('Backend/Template/sidebar'); ?>
+<?= $this->include('backend/Template/header'); ?>
+<?= $this->include('backend/Template/sidebar'); ?>
 
     <div class="row">
         <ol class="breadcrumb">
@@ -17,47 +17,45 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <a href="<?= base_url('admin/input-pengunjung'); ?>" class="btn btn-primary">
+                <div class="panel-heading clearfix">
+                    <a href="<?= base_url('dashboard'); ?>" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left"></span> Kembali
+                    </a>
+                    <a href="<?= base_url('admin/input-pengunjung'); ?>" class="btn btn-primary pull-right">
                         <span class="glyphicon glyphicon-plus"></span> Tambah Pengunjung
                     </a>
                 </div>
                 <div class="panel-body">
-                    <table data-toggle="table" 
-                           data-search="true" 
-                           data-pagination="true" 
-                           data-page-size="10"
-                           data-page-list="[10, 25, 50]"
-                           data-loading-template=""
-                           class="table table-striped table-bordered">
+                    <div class="table-responsive">
+                    <table class="table table-hover table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>ID</th>
+                                <th style="width:60px;" class="text-center">No</th>
+                                <th style="width:120px;">ID</th>
                                 <th>Nama</th>
-                                <th>Email</th>
-                                <th>No HP</th>
+                                <th style="width:200px;">Email</th>
+                                <th style="width:130px;">No HP</th>
                                 <th>Alamat</th>
-                                <th>Aksi</th>
+                                <th style="width:180px;" class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($dataPengunjung)) : ?>
                                 <?php $no = 1; foreach ($dataPengunjung as $p) : ?>
                                     <tr>
-                                        <td><?= $no++; ?></td>
-                                        <td><?= $p['id_pengunjung']; ?></td>
+                                        <td class="text-center"><?= $no++; ?></td>
+                                        <td><code><?= $p['id_pengunjung']; ?></code></td>
                                         <td><?= $p['nama_pengunjung']; ?></td>
-                                        <td><?= $p['email']; ?></td>
+                                        <td><small class="text-muted"><?= $p['email']; ?></small></td>
                                         <td><?= $p['no_hp']; ?></td>
                                         <td><?= $p['alamat']; ?></td>
-                                        <td>
+                                        <td class="text-center">
                                             <a href="<?= base_url('admin/edit-pengunjung/' . $p['id_pengunjung']); ?>" 
-                                               class="btn btn-warning btn-sm">
+                                               class="btn btn-warning btn-sm" style="color: white;" title="Edit">
                                                 <span class="glyphicon glyphicon-edit"></span> Edit
                                             </a>
                                             <a href="#" onclick="hapusPengunjung('<?= $p['id_pengunjung']; ?>')" 
-                                               class="btn btn-danger btn-sm">
+                                               class="btn btn-danger btn-sm" style="color: white;" title="Hapus">
                                                 <span class="glyphicon glyphicon-trash"></span> Hapus
                                             </a>
                                         </td>
@@ -65,11 +63,12 @@
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
-                                    <td colspan="7" class="text-center">Belum ada data pengunjung</td>
+                                    <td colspan="7" class="text-center text-muted">Belum ada data pengunjung</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,4 +92,4 @@ function hapusPengunjung(id) {
 }
 </script>
 
-<?= $this->include('Backend/Template/footer'); ?>
+<?= $this->include('backend/Template/footer'); ?>

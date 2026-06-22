@@ -1,5 +1,5 @@
-<?= $this->include('Backend/Template/header'); ?>
-<?= $this->include('Backend/Template/sidebar'); ?>
+<?= $this->include('backend/Template/header'); ?>
+<?= $this->include('backend/Template/sidebar'); ?>
 
     <div class="row">
         <ol class="breadcrumb">
@@ -17,64 +17,64 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <a href="<?= base_url('admin/input-destinasi'); ?>" class="btn btn-primary">
+                <div class="panel-heading clearfix">
+                    <a href="<?= base_url('dashboard'); ?>" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left"></span> Kembali
+                    </a>
+                    <a href="<?= base_url('admin/input-destinasi'); ?>" class="btn btn-primary pull-right">
                         <span class="glyphicon glyphicon-plus"></span> Tambah Destinasi
                     </a>
                 </div>
                 <div class="panel-body">
-                    <table data-toggle="table" 
-                           data-search="true" 
-                           data-pagination="true" 
-                           data-page-size="10"
-                           data-page-list="[10, 25, 50]"
-                           data-loading-template=""
-                           class="table table-striped table-bordered">
+                    <div class="table-responsive">
+                    <table class="table table-hover table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Foto</th>
+                                <th style="width:60px;" class="text-center">No</th>
+                                <th style="width:100px;" class="text-center">Foto</th>
                                 <th>Nama Destinasi</th>
-                                <th>Kategori</th>
-                                <th>Lokasi</th>
-                                <th>Harga Tiket</th>
-                                <th>Stok</th>
-                                <th>Aksi</th>
+                                <th style="width:150px;">Kategori</th>
+                                <th style="width:150px;">Lokasi</th>
+                                <th style="width:130px;" class="text-right">Harga Tiket</th>
+                                <th style="width:80px;" class="text-center">Stok</th>
+                                <th style="width:180px;" class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($dataDestinasi)) : ?>
                                 <?php $no = 1; foreach ($dataDestinasi as $des) : ?>
                                     <tr>
-                                        <td><?= $no++; ?></td>
-                                        <td>
+                                        <td class="text-center"><?= $no++; ?></td>
+                                        <td class="text-center">
                                             <img src="/Assets/foto_destinasi/<?= $des['foto']; ?>" 
-                                                 width="80px" height="60px" style="object-fit: cover;">
+                                                 width="80" height="60" class="img-thumbnail" 
+                                                 style="object-fit: cover;">
                                         </td>
                                         <td><?= $des['nama_destinasi']; ?></td>
-                                        <td><?= $des['nama_kategori']; ?></td>
+                                        <td><span class="label label-info"><?= $des['nama_kategori']; ?></span></td>
                                         <td><?= $des['lokasi']; ?></td>
-                                        <td>Rp <?= number_format($des['harga_tiket'], 0, ',', '.'); ?></td>
-                                        <td><?= $des['stok_tiket']; ?></td>
-                                        <td>
+                                        <td class="text-right">Rp <?= number_format($des['harga_tiket'], 0, ',', '.'); ?></td>
+                                        <td class="text-center"><?= $des['stok_tiket']; ?></td>
+                                        <td class="text-center">
                                             <a href="<?= base_url('admin/edit-destinasi/'.$des['id_destinasi']); ?>" 
-                                               class="btn btn-warning btn-sm">
-                                                <span class="glyphicon glyphicon-edit"></span>Edit
+                                               class="btn btn-warning btn-sm" style="color: white;" title="Edit">
+                                                <span class="glyphicon glyphicon-edit"></span> Edit
                                             </a>
                                             <a href="#" onclick="hapusDestinasi('<?= $des['id_destinasi']; ?>')" 
-                                               class="btn btn-danger btn-sm">
-                                                <span class="glyphicon glyphicon-trash"></span>Hapus
+                                               class="btn btn-danger btn-sm" style="color: white;" title="Hapus">
+                                                <span class="glyphicon glyphicon-trash"></span> Hapus
                                             </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
-                                    <td colspan="8" class="text-center">Belum ada data destinasi</td>
+                                    <td colspan="8" class="text-center text-muted">Belum ada data destinasi</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,4 +98,4 @@ function hapusDestinasi(id) {
 }
 </script>
 
-<?= $this->include('Backend/Template/footer'); ?>
+<?= $this->include('backend/Template/footer'); ?>

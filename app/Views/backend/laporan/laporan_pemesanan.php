@@ -1,5 +1,5 @@
-<?= $this->include('Backend/Template/header'); ?>
-<?= $this->include('Backend/Template/sidebar'); ?>
+<?= $this->include('backend/Template/header'); ?>
+<?= $this->include('backend/Template/sidebar'); ?>
 
     <div class="row">
         <ol class="breadcrumb">
@@ -18,7 +18,12 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading">Filter Laporan</div>
+                <div class="panel-heading clearfix">
+                    <a href="<?= base_url('dashboard'); ?>" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left"></span> Kembali
+                    </a>
+                    <span style="margin-left: 10px; font-weight: bold;">Filter Laporan</span>
+                </div>
                 <div class="panel-body">
                     <form class="form-inline" action="<?= base_url('admin/filter-laporan'); ?>" method="post">
                         <div class="form-group">
@@ -52,15 +57,16 @@
                     </a>
                 </div>
                 <div class="panel-body">
-                    <table class="table table-bordered table-striped">
+                    <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>No Transaksi</th>
+                                <th data-width="60" class="text-center">No</th>
+                                <th data-width="150">No Transaksi</th>
                                 <th>Pengunjung</th>
-                                <th>Tanggal</th>
-                                <th>Total Bayar</th>
-                                <th>Status</th>
+                                <th data-width="120" class="text-center">Tanggal</th>
+                                <th data-width="150" class="text-right">Total Bayar</th>
+                                <th data-width="160" class="text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,23 +74,35 @@
                             <?php foreach ($dataLaporan as $trx) : ?>
                                 <?php $totalKeseluruhan += $trx['total_bayar']; ?>
                                 <tr>
-                                    <td><?= $no++; ?></td>
-                                    <td><?= $trx['no_transaksi']; ?></td>
+                                    <td class="text-center"><?= $no++; ?></td>
+                                    <td><code><?= $trx['no_transaksi']; ?></code></td>
                                     <td><?= $trx['nama_pengunjung']; ?></td>
-                                    <td><?= $trx['tgl_transaksi']; ?></td>
+                                    <td class="text-center"><?= $trx['tgl_transaksi']; ?></td>
                                     <td class="text-right">Rp <?= number_format($trx['total_bayar'], 0, ',', '.'); ?></td>
-                                    <td><?= $trx['status']; ?></td>
+                                    <td class="text-center">
+                                        <?php $status = $trx['status']; ?>
+                                        <?php if ($status === 'Berhasil' || $status === 'Sukses') : ?>
+                                            <span class="label label-success"><?= $status; ?></span>
+                                        <?php elseif ($status === 'Menunggu Konfirmasi' || $status === 'Pending') : ?>
+                                            <span class="label label-warning"><?= $status; ?></span>
+                                        <?php elseif ($status === 'Batal') : ?>
+                                            <span class="label label-danger"><?= $status; ?></span>
+                                        <?php else : ?>
+                                            <span class="label label-default"><?= $status; ?></span>
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <th colspan="4" class="text-right">Total Keseluruhan</th>
-                                <th class="text-right">Rp <?= number_format($totalKeseluruhan, 0, ',', '.'); ?></th>
+                            <tr class="active">
+                                <th colspan="4" class="text-right" style="font-weight:600;">Total Keseluruhan</th>
+                                <th class="text-right" style="font-weight:600;">Rp <?= number_format($totalKeseluruhan, 0, ',', '.'); ?></th>
                                 <th></th>
                             </tr>
                         </tfoot>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -92,4 +110,4 @@
     <?php endif; ?>
 </div>
 
-<?= $this->include('Backend/Template/footer'); ?>
+<?= $this->include('backend/Template/footer'); ?>

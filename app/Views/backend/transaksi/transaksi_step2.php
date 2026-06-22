@@ -1,5 +1,5 @@
-<?= $this->include('Backend/Template/header'); ?>
-<?= $this->include('Backend/Template/sidebar'); ?>
+<?= $this->include('backend/Template/header'); ?>
+<?= $this->include('backend/Template/sidebar'); ?>
 
     <div class="row">
         <ol class="breadcrumb">
@@ -21,15 +21,16 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Item di Keranjang</div>
                 <div class="panel-body">
-                    <table class="table table-bordered">
+                    <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>Destinasi</th>
-                                <th>Jumlah Tiket</th>
-                                <th>Harga</th>
-                                <th>Subtotal</th>
-                                <th>Tgl Kunjungan</th>
-                                <th>Aksi</th>
+                                <th class="text-center" data-width="100">Jumlah Tiket</th>
+                                <th data-width="140" class="text-right">Harga</th>
+                                <th data-width="140" class="text-right">Subtotal</th>
+                                <th data-width="130" class="text-center">Tgl Kunjungan</th>
+                                <th data-width="100" class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,20 +38,26 @@
                                 <?php $subtotal = $temp['harga_tiket'] * $temp['jumlah_tiket']; $total += $subtotal; ?>
                                 <tr>
                                     <td><?= $temp['nama_destinasi']; ?></td>
-                                    <td><?= $temp['jumlah_tiket']; ?></td>
-                                    <td>Rp <?= number_format($temp['harga_tiket'], 0, ',', '.'); ?></td>
-                                    <td>Rp <?= number_format($subtotal, 0, ',', '.'); ?></td>
-                                    <td><?= $temp['tgl_kunjungan']; ?></td>
-                                    <td>
-                                        <a href="<?= base_url('admin/hapus-temp/' . $temp['id_temp']); ?>" class="btn btn-danger btn-sm">Hapus</a>
+                                    <td class="text-center"><?= $temp['jumlah_tiket']; ?></td>
+                                    <td class="text-right">Rp <?= number_format($temp['harga_tiket'], 0, ',', '.'); ?></td>
+                                    <td class="text-right"><strong>Rp <?= number_format($subtotal, 0, ',', '.'); ?></strong></td>
+                                    <td class="text-center"><?= $temp['tgl_kunjungan']; ?></td>
+                                    <td class="text-center">
+                                        <a href="<?= base_url('admin/hapus-temp/' . $temp['id_temp']); ?>" class="btn btn-danger btn-sm">
+                                            <span class="glyphicon glyphicon-trash"></span> Hapus
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    </div>
                     <?php if (!empty($dataTemp)) : ?>
                         <a href="<?= base_url('admin/simpan-transaksi'); ?>" class="btn btn-success">Simpan Transaksi</a>
                     <?php endif; ?>
+                    <a href="<?= base_url('dashboard'); ?>" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left"></span> Kembali
+                    </a>
                 </div>
             </div>
         </div>
@@ -62,37 +69,35 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Daftar Destinasi</div>
                 <div class="panel-body">
-                    <table data-toggle="table" 
-                           data-search="true" 
-                           data-pagination="true" 
-                           data-loading-template=""
-                           class="table table-striped table-bordered">
+                    <div class="table-responsive">
+                    <table class="table table-hover table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>Nama Destinasi</th>
-                                <th>Kategori</th>
-                                <th>Harga</th>
-                                <th>Stok</th>
-                                <th>Aksi</th>
+                                <th style="width:150px;">Kategori</th>
+                                <th style="width:140px;" class="text-right">Harga</th>
+                                <th style="width:80px;" class="text-center">Stok</th>
+                                <th style="width:100px;" class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($dataDestinasi as $des) : ?>
                                 <tr>
                                     <td><?= $des['nama_destinasi']; ?></td>
-                                    <td><?= $des['nama_kategori']; ?></td>
-                                    <td>Rp <?= number_format($des['harga_tiket'], 0, ',', '.'); ?></td>
-                                    <td><?= $des['stok_tiket']; ?></td>
-                                    <td>
+                                    <td><span class="label label-info"><?= $des['nama_kategori']; ?></span></td>
+                                    <td class="text-right">Rp <?= number_format($des['harga_tiket'], 0, ',', '.'); ?></td>
+                                    <td class="text-center"><?= $des['stok_tiket']; ?></td>
+                                    <td class="text-center">
                                         <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalTambah" 
                                                 onclick="setDestinasi('<?= $des['id_destinasi']; ?>', '<?= $des['nama_destinasi']; ?>')">
-                                            Tambah
+                                            <span class="glyphicon glyphicon-plus"></span> Tambah
                                         </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,4 +140,4 @@ function setDestinasi(id, nama) {
 }
 </script>
 
-<?= $this->include('Backend/Template/footer'); ?>
+<?= $this->include('backend/Template/footer'); ?>

@@ -87,15 +87,11 @@ class Auth extends BaseController
                 'id_pengunjung'   => $pengunjung['id_pengunjung'],
                 'nama_pengunjung' => $pengunjung['nama_pengunjung'],
                 'email'           => $pengunjung['email'],
-                'role'            => $pengunjung['role'],
+                'role'            => 'pengunjung',
                 'foto'            => $pengunjung['foto'],
                 'is_login'        => TRUE
             ];
             session()->set($sessionData);
-
-            if ($pengunjung['role'] === 'admin') {
-                return redirect()->to('/dashboard');
-            }
             return redirect()->to('/user/dashboard');
         }
 

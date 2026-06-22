@@ -3,25 +3,31 @@
 namespace App\Controllers;
 
 use App\Models\M_Pengunjung;
+use App\Models\M_Admin;
 use App\Models\M_Kategori;
 use App\Models\M_Destinasi;
 use App\Models\M_Transaksi;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
+use App\Models\M_Availability;
 
 class Admin extends BaseController
 {
     protected $modelPengunjung;
+    protected $modelAdmin;
     protected $modelKategori;
     protected $modelDestinasi;
     protected $modelTransaksi;
+    protected $modelAvailability;
 
     public function __construct()
     {
         $this->modelPengunjung = new M_Pengunjung();
+        $this->modelAdmin      = new M_Admin();
         $this->modelKategori   = new M_Kategori();
         $this->modelDestinasi   = new M_Destinasi();
         $this->modelTransaksi  = new M_Transaksi();
+        $this->modelAvailability = new M_Availability();
     }
 
     private function generateTransaksiQrCode(string $noTransaksi): ?string
@@ -76,28 +82,27 @@ class Admin extends BaseController
             return redirect()->to('/register');
         }
 
-        // Cek apakah email sudah terdaftar
-        $existing = $this->modelPengunjung->getDataPengunjung(['email' => $email]);
+        $existing = $this->modelAdmin->getDataAdmin(['email' => $email]);
         if ($existing) {
             session()->setFlashdata('error', 'Email sudah terdaftar!');
             return redirect()->to('/register');
         }
 
         $data = [
-            'id_pengunjung'   => $this->modelPengunjung->autoNumber(),
-            'nama_pengunjung' => $nama,
-            'email'           => $email,
-            'password'        => password_hash($password, PASSWORD_BCRYPT),
-            'no_hp'           => '', // Default empty
-            'alamat'          => '', // Default empty
-            'created_at'      => date('Y-m-d H:i:s'),
-            'updated_at'      => date('Y-m-d H:i:s'),
-            'is_delete'       => '0'
+            'id_admin'    => $this->modelAdmin->autoNumber(),
+            'nama_admin'  => $nama,
+            'email'       => $email,
+            'password'    => password_hash($password, PASSWORD_BCRYPT),
+            'no_hp'       => '',
+            'alamat'      => '',
+            'created_at'  => date('Y-m-d H:i:s'),
+            'updated_at'  => date('Y-m-d H:i:s'),
+            'is_delete'   => '0'
         ];
 
-        $this->modelPengunjung->saveDataPengunjung($data);
+        $this->modelAdmin->saveDataAdmin($data);
         session()->setFlashdata('success', 'Registrasi berhasil! Silakan login.');
-        return redirect()->to('/login');
+        return redirect()->to('/admin/login');
     }
     public function autentikasi()
     {
@@ -106,31 +111,30 @@ class Admin extends BaseController
 
         if (empty($email) || empty($password)) {
             session()->setFlashdata('error', 'Email dan Password wajib diisi!');
-            return redirect()->to('/login');
+            return redirect()->to('/admin/login');
         }
 
-        $pengunjung = $this->modelPengunjung->getDataPengunjung([
+        $admin = $this->modelAdmin->getDataAdmin([
             'email'     => $email,
             'is_delete' => '0'
         ]);
 
-        // DEBUG
-        if (!$pengunjung) {
+        if (!$admin) {
             session()->setFlashdata('error', 'Email tidak ditemukan');
-            return redirect()->to('/login');
+            return redirect()->to('/admin/login');
         }
 
-        if (!password_verify($password, $pengunjung['password'])) {
+        if (!password_verify($password, $admin['password'])) {
             session()->setFlashdata('error', 'Password salah');
-            return redirect()->to('/login');
+            return redirect()->to('/admin/login');
         }
 
-        // Jika cocok
         $sessionData = [
-            'id_pengunjung'   => $pengunjung['id_pengunjung'],
-            'nama_pengunjung' => $pengunjung['nama_pengunjung'],
-            'email'           => $pengunjung['email'],
-            'is_login'        => TRUE
+            'id_admin'    => $admin['id_admin'],
+            'nama_admin'  => $admin['nama_admin'],
+            'email'       => $admin['email'],
+            'role'        => 'admin',
+            'is_login'    => TRUE
         ];
         session()->set($sessionData);
         return redirect()->to('/dashboard');
@@ -189,13 +193,38 @@ class Admin extends BaseController
             }
         }
 
+        $db = \Config\Database::connect();
+
+        // Low availability (next 7 days) for admin alerts
+        $lowBuilder = $db->table('tbl_availability a')
+            ->select('a.*, d.nama_destinasi, (a.capacity - a.booked) AS remaining')
+            ->join('tbl_destinasi d', "d.id_destinasi COLLATE utf8mb4_general_ci = a.destinasi_kode COLLATE utf8mb4_general_ci", 'LEFT', false)
+            ->where('a.is_delete', '0')
+            ->where('a.date >=', date('Y-m-d'))
+            ->orderBy('a.date', 'ASC')
+            ->limit(5);
+
+        $lowAvailability = $lowBuilder->get()->getResultArray();
+
+        // Recent transactions (last 5)
+        $recentTransaksi = $db->table('tbl_transaksi t')
+            ->select('t.no_transaksi, t.tgl_transaksi, t.total_bayar, t.status, p.nama_pengunjung, d.nama_destinasi')
+            ->join('tbl_pengunjung p', 'p.id_pengunjung = t.id_pengunjung', 'LEFT')
+            ->join('tbl_destinasi d', 'd.id_destinasi = t.id_destinasi', 'LEFT')
+            ->orderBy('t.tgl_transaksi', 'DESC')
+            ->limit(5)
+            ->get()
+            ->getResultArray();
+
         $data = [
             'totalKategori'   => $totalKategori,
             'totalDestinasi'  => $totalDestinasi,
             'totalPengunjung' => $totalPengunjung,
             'totalTransaksi'  => $totalTransaksi,
             'grafikLabels'    => array_values($grafikLabels),
-            'grafikData'      => array_values($grafikData)
+            'grafikData'      => array_values($grafikData),
+            'lowAvailability' => $lowAvailability,
+            'recentTransaksi' => $recentTransaksi,
         ];
 
         return view('backend/dashboard_admin', $data);
@@ -537,29 +566,64 @@ class Admin extends BaseController
 
         $idPengunjung = session()->get('idPengunjungTransaksi');
         $idDestinasi = $this->request->getPost('id_destinasi');
-        $jumlah = $this->request->getPost('jumlah_tiket');
+        $jumlah = (int) $this->request->getPost('jumlah_tiket');
         $tglKunjungan = $this->request->getPost('tgl_kunjungan');
 
-        // Validasi stok
+        // Validasi stok global
         $destinasi = $this->modelDestinasi->getDestinasiById($idDestinasi);
         if ($destinasi['stok_tiket'] < $jumlah) {
             session()->setFlashdata('error', 'Stok tiket tidak mencukupi!');
             return redirect()->to('/admin/transaksi-step2');
         }
 
-        // Kurangi stok
-        $this->modelDestinasi->updateDataDestinasi(
-            ['stok_tiket' => $destinasi['stok_tiket'] - $jumlah],
-            ['id_destinasi' => $idDestinasi]
-        );
+        $db = \Config\Database::connect();
 
-        $data = [
-            'id_pengunjung' => $idPengunjung,
-            'id_destinasi'  => $idDestinasi,
-            'jumlah_tiket'  => $jumlah,
-            'tgl_kunjungan' => $tglKunjungan
-        ];
-        $this->modelTransaksi->saveDataTemp($data);
+        // Ensure availability row exists and attempt atomic increment
+        $this->modelAvailability->ensureRow((string) $idDestinasi, $tglKunjungan, (int) ($destinasi['stok_tiket'] ?? 0));
+
+        $builder = $db->table('tbl_availability');
+        $builder->set('booked', "booked + {$jumlah}", false)
+                ->where('destinasi_kode', (string) $idDestinasi)
+                ->where('date', $tglKunjungan)
+                ->where('is_delete', '0')
+                ->where("capacity - booked >= {$jumlah}", null, false)
+                ->update();
+
+        if ($db->affectedRows() == 0) {
+            session()->setFlashdata('error', 'Kapasitas pada tanggal tersebut tidak mencukupi.');
+            return redirect()->to('/admin/transaksi-step2');
+        }
+
+        // Proceed with saving temp and reducing global stock inside transaction
+        $db->transStart();
+        try {
+            // Kurangi stok global
+            $this->modelDestinasi->updateDataDestinasi(
+                ['stok_tiket' => $destinasi['stok_tiket'] - $jumlah],
+                ['id_destinasi' => $idDestinasi]
+            );
+
+            $data = [
+                'id_pengunjung' => $idPengunjung,
+                'id_destinasi'  => $idDestinasi,
+                'jumlah_tiket'  => $jumlah,
+                'tgl_kunjungan' => $tglKunjungan
+            ];
+            $this->modelTransaksi->saveDataTemp($data);
+
+            $db->transComplete();
+        } catch (\Exception $e) {
+            $db->transRollback();
+            // revert availability booked
+            $builder->set('booked', "booked - {$jumlah}", false)
+                    ->where('destinasi_kode', (string) $idDestinasi)
+                    ->where('date', $tglKunjungan)
+                    ->where('is_delete', '0')
+                    ->update();
+
+            session()->setFlashdata('error', 'Gagal menambahkan tiket ke keranjang. Silakan coba lagi.');
+            return redirect()->to('/admin/transaksi-step2');
+        }
 
         session()->setFlashdata('success', 'Tiket ditambahkan ke keranjang!');
         return redirect()->to('/admin/transaksi-step2');
@@ -571,12 +635,23 @@ class Admin extends BaseController
 
         // Kembalikan stok
         $temp = $this->modelTransaksi->getDataTemp(['id_temp' => $idTemp])[0] ?? null;
+        $db = \Config\Database::connect();
         if ($temp) {
             $destinasi = $this->modelDestinasi->getDestinasiById($temp['id_destinasi']);
+
+            // Revert global stock
             $this->modelDestinasi->updateDataDestinasi(
                 ['stok_tiket' => $destinasi['stok_tiket'] + $temp['jumlah_tiket']],
                 ['id_destinasi' => $temp['id_destinasi']]
             );
+
+            // Decrement availability booked
+            $builder = $db->table('tbl_availability');
+            $builder->set('booked', "booked - {$temp['jumlah_tiket']}", false)
+                    ->where('destinasi_kode', (string) $temp['id_destinasi'])
+                    ->where('date', $temp['tgl_kunjungan'])
+                    ->where('is_delete', '0')
+                    ->update();
         }
 
         $this->modelTransaksi->hapusDataTemp(['id_temp' => $idTemp]);
@@ -598,20 +673,27 @@ class Admin extends BaseController
 
         $noTransaksi = $this->modelTransaksi->autoNumber();
         $totalBayar = 0;
+        $totalTiket = 0;
+        $firstItem = $dataTemp[0];
 
         // Hitung total
         foreach ($dataTemp as $item) {
             $totalBayar += $item['harga_tiket'] * $item['jumlah_tiket'];
+            $totalTiket += $item['jumlah_tiket'];
         }
 
         // Simpan transaksi utama
         $this->modelTransaksi->saveDataTransaksi([
-            'no_transaksi'  => $noTransaksi,
-            'id_pengunjung' => $idPengunjung,
-            'tgl_transaksi' => date('Y-m-d'),
-            'total_bayar'   => $totalBayar,
-            'status'        => 'Berhasil',
-            'id_admin'      => session()->get('id_pengunjung') // admin yang login
+            'no_transaksi'      => $noTransaksi,
+            'id_pengunjung'     => $idPengunjung,
+            'id_destinasi'      => $firstItem['id_destinasi'],
+            'tanggal_kunjungan' => $firstItem['tgl_kunjungan'],
+            'jumlah_tiket'      => $totalTiket,
+            'tgl_transaksi'     => date('Y-m-d'),
+            'total_bayar'       => $totalBayar,
+            'status'            => 'Berhasil',
+            'id_admin'          => session()->get('id_admin'),
+            'created_at'        => date('Y-m-d H:i:s'),
         ]);
 
         // Simpan detail & hapus temp
@@ -664,7 +746,7 @@ class Admin extends BaseController
 
         $dataUpdate = [
             'status'   => 'Berhasil',
-            'id_admin' => session()->get('id_pengunjung'),
+            'id_admin' => session()->get('id_admin'),
         ];
 
         if ($qrCodePath) {
@@ -713,4 +795,225 @@ class Admin extends BaseController
 
         return view('backend/laporan/laporan_pemesanan', $data);
     }
+
+    public function profile()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $data['user'] = $this->modelAdmin->getAdminById(session()->get('id_admin'));
+        return view('backend/profile', $data);
+    }
+
+    public function update_profile()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $idUser = session()->get('id_admin');
+        $data = [
+            'nama_admin'  => $this->request->getPost('nama'),
+            'no_hp'       => $this->request->getPost('no_hp'),
+            'alamat'      => $this->request->getPost('alamat'),
+            'updated_at'  => date('Y-m-d H:i:s'),
+        ];
+
+        $foto = $this->request->getFile('foto');
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            $newName = $foto->getRandomName();
+            $foto->move(FCPATH . 'uploads/profile/', $newName);
+            $data['foto'] = $newName;
+        }
+
+        $this->modelAdmin->updateDataAdmin($data, ['id_admin' => $idUser]);
+        session()->set('nama_admin', $data['nama_admin']);
+
+        return redirect()->to('/admin/profile')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function ganti_password()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $idUser = session()->get('id_admin');
+        $passwordBaru = $this->request->getPost('password_baru');
+        $konfirmasi = $this->request->getPost('konfirmasi_password');
+
+        if ($passwordBaru !== $konfirmasi) {
+            return redirect()->back()->with('error', 'Konfirmasi password tidak cocok.');
+        }
+
+        if (strlen($passwordBaru) < 6) {
+            return redirect()->back()->with('error', 'Password minimal 6 karakter.');
+        }
+
+        $data = [
+            'password'   => password_hash($passwordBaru, PASSWORD_BCRYPT),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        $this->modelAdmin->updateDataAdmin($data, ['id_admin' => $idUser]);
+
+        return redirect()->to('/admin/profile')->with('success', 'Password berhasil diganti.');
+    }
+
+    public function settings()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $db = \Config\Database::connect();
+        try {
+            $settings = $db->table('tbl_pengaturan')->get()->getResultArray();
+        } catch (\Throwable $e) {
+            return redirect()->to('/dashboard')->with('error', 'Tabel pengaturan belum ada. Jalankan "php spark migrate" terlebih dahulu.');
+        }
+        $data = [];
+        foreach ($settings as $s) {
+            $data[$s['nama_setting']] = $s['nilai'];
+        }
+
+        return view('backend/settings', $data);
+    }
+
+    public function update_settings()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $db = \Config\Database::connect();
+        try {
+            $builder = $db->table('tbl_pengaturan');
+
+            $fields = ['nama_aplikasi', 'alamat', 'telepon', 'email_kontak', 'deskripsi_aplikasi'];
+            foreach ($fields as $field) {
+                $value = $this->request->getPost($field);
+                if ($value !== null) {
+                    $builder->where('nama_setting', $field)
+                            ->update([
+                                'nilai' => $value,
+                                'updated_at' => date('Y-m-d H:i:s'),
+                            ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            return redirect()->to('/admin/settings')->with('error', 'Gagal menyimpan. Jalankan "php spark migrate" terlebih dahulu.');
+        }
+
+        return redirect()->to('/admin/settings')->with('success', 'Pengaturan berhasil disimpan.');
+    }
+
+    // Availability management
+    public function master_availability()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('tbl_availability a')
+            ->select('a.*, d.nama_destinasi')
+            ->join('tbl_destinasi d', "d.id_destinasi COLLATE utf8mb4_general_ci = a.destinasi_kode COLLATE utf8mb4_general_ci", 'LEFT', false)
+            ->where('a.is_delete', '0')
+            ->orderBy('a.date', 'DESC');
+
+        $data['availabilities'] = $builder->get()->getResultArray();
+        return view('backend/master_availability/master_data_availability', $data);
+    }
+
+    public function input_availability()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $db = \Config\Database::connect();
+        $data['destinasi'] = $db->table('tbl_destinasi')->where('is_delete', '0')->get()->getResultArray();
+        return view('backend/master_availability/input_availability', $data);
+    }
+
+    public function simpan_availability()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $dest = $this->request->getPost('destinasi_kode');
+        $date = $this->request->getPost('date');
+        $capacity = (int) $this->request->getPost('capacity');
+
+        $db = \Config\Database::connect();
+        // prevent duplicate
+        $exists = $db->table('tbl_availability')->where(['destinasi_kode' => $dest, 'date' => $date, 'is_delete' => '0'])->get()->getRowArray();
+        if ($exists) {
+            session()->setFlashdata('error', 'Ketersediaan untuk tanggal tersebut sudah ada');
+            return redirect()->to('/admin/master-availability');
+        }
+
+        $db->table('tbl_availability')->insert([
+            'destinasi_kode' => $dest,
+            'date' => $date,
+            'capacity' => $capacity,
+            'booked' => 0,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        session()->setFlashdata('success', 'Ketersediaan berhasil ditambahkan');
+        return redirect()->to('/admin/master-availability');
+    }
+
+    public function edit_availability($id)
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $db = \Config\Database::connect();
+        $data['availability'] = $db->table('tbl_availability')->where('id', $id)->get()->getRowArray();
+        $data['destinasi'] = $db->table('tbl_destinasi')->where('is_delete', '0')->get()->getResultArray();
+        return view('backend/master_availability/edit_availability', $data);
+    }
+
+    public function update_availability()
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $id = (int) $this->request->getPost('id');
+        $dest = $this->request->getPost('destinasi_kode');
+        $date = $this->request->getPost('date');
+        $capacity = (int) $this->request->getPost('capacity');
+
+        $db = \Config\Database::connect();
+        $db->table('tbl_availability')->where('id', $id)->update([
+            'destinasi_kode' => $dest,
+            'date' => $date,
+            'capacity' => $capacity,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        session()->setFlashdata('success', 'Ketersediaan berhasil diupdate');
+        return redirect()->to('/admin/master-availability');
+    }
+
+    public function hapus_availability($id)
+    {
+        if (!session()->get('is_login')) {
+            return redirect()->to('/');
+        }
+
+        $db = \Config\Database::connect();
+        $db->table('tbl_availability')->where('id', $id)->update(['is_delete' => '1', 'updated_at' => date('Y-m-d H:i:s')]);
+
+        session()->setFlashdata('success', 'Ketersediaan dihapus');
+        return redirect()->to('/admin/master-availability');
+    }
 }
+

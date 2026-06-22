@@ -1,5 +1,5 @@
-<?= $this->include('Backend/Template/header'); ?>
-<?= $this->include('Backend/Template/sidebar'); ?>
+<?= $this->include('backend/Template/header'); ?>
+<?= $this->include('backend/Template/sidebar'); ?>
 
     <div class="row">
         <ol class="breadcrumb">
@@ -71,8 +71,8 @@
                             <button type="submit" class="btn btn-success">
                                 <span class="glyphicon glyphicon-save"></span> Update
                             </button>
-                            <a href="<?= base_url('admin/master-destinasi'); ?>" class="btn btn-default">
-                                <span class="glyphicon glyphicon-arrow-left"></span> Batal
+                            <a href="<?= base_url('dashboard'); ?>" class="btn btn-default">
+                                <span class="glyphicon glyphicon-arrow-left"></span> Kembali
                             </a>
                         </form>
                     </div>
@@ -82,4 +82,4 @@
     </div>
 </div>
 
-<?= $this->include('Backend/Template/footer'); ?>
+<?= $this->include('backend/Template/footer'); ?>

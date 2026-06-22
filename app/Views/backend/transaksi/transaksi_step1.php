@@ -1,5 +1,5 @@
-<?= $this->include('Backend/Template/header'); ?>
-<?= $this->include('Backend/Template/sidebar'); ?>
+<?= $this->include('backend/Template/header'); ?>
+<?= $this->include('backend/Template/sidebar'); ?>
 
     <div class="row">
         <ol class="breadcrumb">
@@ -34,6 +34,9 @@
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary">Lanjut</button>
+                            <a href="<?= base_url('dashboard'); ?>" class="btn btn-default">
+                                <span class="glyphicon glyphicon-arrow-left"></span> Kembali
+                            </a>
                         </form>
                     </div>
                 </div>
@@ -42,4 +45,4 @@
     </div>
 </div>
 
-<?= $this->include('Backend/Template/footer'); ?>
+<?= $this->include('backend/Template/footer'); ?>
