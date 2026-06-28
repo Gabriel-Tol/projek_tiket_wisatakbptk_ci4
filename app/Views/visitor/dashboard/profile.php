@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 <div class="row">
+    <div class="col-lg-12" style="margin-bottom: 15px;">
+        <a href="<?= base_url('user/dashboard'); ?>" class="btn btn-default">
+            <span class="glyphicon glyphicon-arrow-left"></span> Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-7">
         <div class="panel panel-default">
             <div class="panel-heading">Edit Profil</div>

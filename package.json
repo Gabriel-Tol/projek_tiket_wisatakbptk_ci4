@@ -1,0 +1,14 @@
+{
+  "name": "wisata-ci4-e2e",
+  "version": "1.0.0",
+  "description": "Playwright E2E tests for Wisata CI4",
+  "private": true,
+  "scripts": {
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
+    "test:e2e:report": "npx playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0"
+  }
+}

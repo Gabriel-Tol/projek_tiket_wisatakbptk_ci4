@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Stylized 3D-look map of Kalimantan (abstract layered shapes for depth) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e6f7ff"/>
+      <stop offset="100%" stop-color="#dff3ff"/>
+    </linearGradient>
+    <linearGradient id="layer1" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#87c7a3"/>
+      <stop offset="100%" stop-color="#5aa674"/>
+    </linearGradient>
+    <linearGradient id="layer2" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#9ed7b1"/>
+      <stop offset="100%" stop-color="#6fb781"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="30" flood-color="#000" flood-opacity="0.12" />
+    </filter>
+    <filter id="edgeHighlight" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feBlend in="SourceGraphic" in2="b" mode="normal"/>
+    </filter>
+  </defs>
+
+  <!-- Background sky -->
+  <rect width="1400" height="900" fill="url(#sky)" />
+
+  <!-- Layered abstract island shapes to suggest Kalimantan silhouette -->
+  <!-- Back layer (farthest) -->
+  <g transform="translate(0,40)" opacity="0.95">
+    <path d="M160,560 C200,420 360,380 520,420 C680,460 800,420 960,460 C1120,500 1280,480 1340,460 L1340,860 L160,860 Z" fill="url(#layer2)" />
+  </g>
+
+  <!-- Middle layer -->
+  <g transform="translate(0,0)" filter="url(#softShadow)">
+    <path d="M120,520 C220,380 380,340 540,380 C700,420 820,380 980,420 C1160,470 1280,440 1340,420 L1340,820 L120,820 Z" fill="url(#layer1)" />
+  </g>
+
+  <!-- Top layer with subtle bevel to create 3D feel -->
+  <g transform="translate(0,-8)">
+    <path d="M100,500 C220,360 380,320 540,360 C700,400 820,360 980,400 C1160,450 1280,420 1340,400 L1340,800 L100,800 Z" fill="#2f9b6a" filter="url(#edgeHighlight)"/>
+    <!-- highlight edge -->
+    <path d="M120,512 C220,384 380,344 540,384 C700,424 820,384 980,424 C1160,468 1280,440 1340,420" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="6" stroke-linecap="round" />
+  </g>
+
+  <!-- Minimal water/sea foreground for contrast -->
+  <g>
+    <rect x="0" y="820" width="1400" height="80" fill="#cfeef9" opacity="0.6" />
+  </g>
+
+  <!-- Light grid / contour lines to suggest elevation (subtle) -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1.5">
+    <path d="M160,600 C300,480 420,460 580,490 C740,520 860,490 1020,520" />
+    <path d="M200,640 C360,520 500,500 660,530 C820,560 940,530 1100,560" />
+  </g>
+
+  <!-- Center negative space kept airy -->
+  <rect x="420" y="260" width="560" height="240" fill="transparent" />
+
+  <!-- Accent: small pin marker near West Kalimantan area (suggestion) -->
+  <g transform="translate(360,420)">
+    <circle cx="0" cy="0" r="8" fill="#ffb86b" stroke="#fff" stroke-width="2" />
+    <circle cx="0" cy="0" r="18" fill="none" stroke="#ffb86b" stroke-opacity="0.14" stroke-width="6" />
+  </g>
+
+</svg>

@@ -12,7 +12,8 @@
     
     <style>
         body {
-            background: url('<?= base_url('Assets/bukit%20kelam.jpg') ?>') no-repeat center center fixed;
+            background: url('<?= base_url('Assets/map_kalimantan_3d.svg') ?>') no-repeat center center fixed;
+            background-size: cover;
             background-size: cover;
             height: 100vh;
             display: flex;

@@ -1,5 +1,6 @@
 <?= $this->include('backend/Template/header'); ?>
 <?= $this->include('backend/Template/sidebar'); ?>
+<?php /** @var array $grafikLabels */ /** @var array $grafikData */ ?>
 
 <!-- Breadcrumb -->
 <div class="row">

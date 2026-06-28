@@ -9,18 +9,21 @@ use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use App\Models\M_Availability;
 
 class Booking extends BaseController
 {
     protected $modelTransaksi;
     protected $modelDestinasi;
     protected $modelPengunjung;
+    protected $modelAvailability;
 
     public function __construct()
     {
         $this->modelTransaksi  = new M_Transaksi();
         $this->modelDestinasi   = new M_Destinasi();
         $this->modelPengunjung = new M_Pengunjung();
+        $this->modelAvailability = new M_Availability();
     }
 
     public function form($idDestinasi)
@@ -60,9 +63,28 @@ class Booking extends BaseController
         }
 
         $idDestinasi = $this->request->getPost('id_destinasi');
-        $destinasi = $this->modelDestinasi->getDestinasiById($idDestinasi);
-        
-        $jumlahTiket = $this->request->getPost('jumlah_tiket');
+        $destinasi   = $this->modelDestinasi->getDestinasiById($idDestinasi);
+        $tanggal     = $this->request->getPost('tanggal_kunjungan');
+        $jumlahTiket = (int) $this->request->getPost('jumlah_tiket');
+
+        // Ensure availability row exists for this date (uses id_destinasi as destinasi_kode)
+        $this->modelAvailability->ensureRow((string) $idDestinasi, $tanggal, (int) ($destinasi['stok_tiket'] ?? 0));
+
+        // Attempt atomic increment on tbl_availability (fails if not enough capacity)
+        $db = \Config\Database::connect();
+        $builder = $db->table('tbl_availability');
+        $builder->set('booked', "booked + {$jumlahTiket}", false)
+                ->where('destinasi_kode', (string) $idDestinasi)
+                ->where('date', $tanggal)
+                ->where('is_delete', '0')
+                ->where("capacity - booked >= {$jumlahTiket}", null, false)
+                ->update();
+
+        if ($db->affectedRows() == 0) {
+            return redirect()->back()->withInput()->with('error', 'Stok pada tanggal tersebut tidak mencukupi atau sudah habis.');
+        }
+
+        // Prepare transaksi data
         $totalBayar  = $destinasi['harga_tiket'] * $jumlahTiket;
         $noTransaksi = $this->modelTransaksi->autoNumber();
 
@@ -71,7 +93,7 @@ class Booking extends BaseController
             'tgl_transaksi'     => date('Y-m-d H:i:s'),
             'id_pengunjung'     => session()->get('id_pengunjung'),
             'id_destinasi'      => $idDestinasi,
-            'tanggal_kunjungan' => $this->request->getPost('tanggal_kunjungan'),
+            'tanggal_kunjungan' => $tanggal,
             'jumlah_tiket'      => $jumlahTiket,
             'total_bayar'       => $totalBayar,
             'status'            => 'Menunggu Konfirmasi',
@@ -82,7 +104,30 @@ class Booking extends BaseController
         $qrPath = $this->generateQr($noTransaksi);
         $data['qr_code'] = $qrPath;
 
-        $this->modelTransaksi->saveDataTransaksi($data);
+        // Save transaksi and update global stok inside DB transaction
+        $db->transStart();
+        try {
+            $this->modelTransaksi->saveDataTransaksi($data);
+
+            // Update global stok_tiket to reflect overall remaining stock
+            $this->modelDestinasi->updateDataDestinasi(
+                ['stok_tiket' => $destinasi['stok_tiket'] - $jumlahTiket],
+                ['id_destinasi' => $idDestinasi]
+            );
+
+            $db->transComplete();
+        } catch (\Exception $e) {
+            $db->transRollback();
+
+            // Revert availability booked count if transaction fails
+            $builder->set('booked', "booked - {$jumlahTiket}", false)
+                    ->where('destinasi_kode', (string) $idDestinasi)
+                    ->where('date', $tanggal)
+                    ->where('is_delete', '0')
+                    ->update();
+
+            return redirect()->back()->withInput()->with('error', 'Gagal memproses pemesanan. Silakan coba lagi.');
+        }
 
         return redirect()->to('/booking/success/' . $noTransaksi)->with('success', 'Pemesanan tiket berhasil!');
     }

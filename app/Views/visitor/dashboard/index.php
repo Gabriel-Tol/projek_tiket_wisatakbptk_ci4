@@ -94,6 +94,25 @@
     
     <div class="col-md-4">
         <div class="panel panel-default">
+            <div class="panel-heading">Peringatan Ketersediaan</div>
+            <div class="panel-body">
+                <?php if (!empty($lowAvailability)) : ?>
+                    <ul class="list-unstyled">
+                        <?php foreach ($lowAvailability as $la) : ?>
+                            <li style="margin-bottom:8px;">
+                                <strong><?= $la['nama_destinasi'] ?? $la['destinasi_kode']; ?></strong><br>
+                                <?= date('d/m/Y', strtotime($la['date'])) ?> — Sisa: <?= $la['remaining']; ?> tiket
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <div class="text-right"><a href="<?= base_url('admin/master-availability'); ?>">Kelola Ketersediaan &rarr;</a></div>
+                <?php else : ?>
+                    <p class="text-muted">Tidak ada peringatan ketersediaan.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
             <div class="panel-heading">Profil Saya</div>
             <div class="panel-body text-center">
                 <div style="margin-bottom: 15px;">

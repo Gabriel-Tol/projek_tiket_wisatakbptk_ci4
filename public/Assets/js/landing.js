@@ -3,15 +3,29 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', function() {
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.getElementById('navbarNav');
+
+    const updateNavbar = () => {
         if (window.scrollY > 50) {
-            navbar.classList.add('scrolled', 'navbar-light');
-            navbar.classList.remove('navbar-dark');
+            navbar.classList.add('scrolled');
         } else {
-            navbar.classList.remove('scrolled', 'navbar-light');
-            navbar.classList.add('navbar-dark');
+            navbar.classList.remove('scrolled');
         }
-    });
+    };
+
+    window.addEventListener('scroll', updateNavbar);
+    updateNavbar();
+
+    // Close mobile menu on link click
+    if (navbarCollapse) {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const collapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (collapse) collapse.hide();
+            });
+        });
+    }
 
     // Initialize AOS
     if (typeof AOS !== 'undefined') {
@@ -67,6 +81,103 @@ document.addEventListener('DOMContentLoaded', function() {
                     behavior: 'smooth'
                 });
             }
+        });
+    });
+
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const darkModeIcon = document.getElementById('darkModeIcon');
+    const html = document.documentElement;
+
+    const setDarkMode = (isDark) => {
+        if (isDark) {
+            html.setAttribute('data-theme', 'dark');
+            darkModeIcon.className = 'bi bi-sun-fill';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            html.removeAttribute('data-theme');
+            darkModeIcon.className = 'bi bi-moon-fill';
+            localStorage.setItem('theme', 'light');
+        }
+    };
+
+    // Load saved preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        setDarkMode(true);
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', () => {
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            setDarkMode(!isDark);
+        });
+    }
+
+    // Expanding Cards - Destinasi Wisata Unggulan
+    const expandingCardsEl = document.getElementById('expandingCards');
+    if (expandingCardsEl) {
+        const cards = expandingCardsEl.querySelectorAll('.expanding-card');
+        let activeIndex = 0;
+
+        const isDesktop = () => window.innerWidth >= 768;
+
+        const updateGrid = () => {
+            if (cards.length === 0) return;
+
+            if (isDesktop()) {
+                const cols = Array.from(cards).map((_, i) => i === activeIndex ? '5fr' : '1fr').join(' ');
+                expandingCardsEl.style.gridTemplateColumns = cols;
+                expandingCardsEl.style.gridTemplateRows = '1fr';
+            } else {
+                const rows = Array.from(cards).map((_, i) => i === activeIndex ? '5fr' : '1fr').join(' ');
+                expandingCardsEl.style.gridTemplateRows = rows;
+                expandingCardsEl.style.gridTemplateColumns = '1fr';
+            }
+        };
+
+        const setActive = (index) => {
+            activeIndex = index;
+            cards.forEach((card, i) => {
+                card.setAttribute('data-active', i === index ? 'true' : 'false');
+            });
+            updateGrid();
+        };
+
+        cards.forEach((card, i) => {
+            card.addEventListener('mouseenter', () => setActive(i));
+            card.addEventListener('focus', () => setActive(i));
+            card.addEventListener('click', () => setActive(i));
+        });
+
+        updateGrid();
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateGrid, 100);
+        });
+    }
+
+    // Gallery Infinite Auto Slider - Pause on hover
+    const galleryInfiniteScroll = document.getElementById('galleryInfiniteScroll');
+    if (galleryInfiniteScroll) {
+        galleryInfiniteScroll.addEventListener('mouseenter', () => {
+            galleryInfiniteScroll.style.animationPlayState = 'paused';
+        });
+        galleryInfiniteScroll.addEventListener('mouseleave', () => {
+            galleryInfiniteScroll.style.animationPlayState = 'running';
+        });
+    }
+
+    // Testimonials Vertical Scrolling - Pause on hover
+    const testimonialColumns = document.querySelectorAll('.testimonials-scroll');
+    testimonialColumns.forEach(column => {
+        column.addEventListener('mouseenter', () => {
+            column.style.animationPlayState = 'paused';
+        });
+        column.addEventListener('mouseleave', () => {
+            column.style.animationPlayState = 'running';
         });
     });
 });

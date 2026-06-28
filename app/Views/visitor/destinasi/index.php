@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 <div class="row">
+    <div class="col-lg-12" style="margin-bottom: 15px;">
+        <a href="<?= base_url('user/dashboard'); ?>" class="btn btn-default">
+            <span class="glyphicon glyphicon-arrow-left"></span> Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-body">
@@ -56,7 +63,7 @@
                                 <h4 style="margin: 5px 0; color: #30a5ff; font-weight: bold;">Rp <?= number_format($row['harga_tiket'], 0, ',', '.') ?></h4>
                             </div>
                             <div class="col-xs-5 text-right">
-                                <a href="<?= base_url('destinasi/detail/' . $row['id_destinasi']) ?>" class="btn btn-primary btn-sm">Detail</a>
+                                <a href="<?= base_url('user/destinasi/detail/' . $row['id_destinasi']) ?>" class="btn btn-primary btn-sm">Detail</a>
                             </div>
                         </div>
                     </div>

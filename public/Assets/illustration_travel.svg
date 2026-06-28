@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Minimal vector illustration: mountains, gradient sky, hot-air balloon -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="g-sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#d6f0ff"/>
+      <stop offset="100%" stop-color="#eaf6ff"/>
+    </linearGradient>
+    <linearGradient id="g-mt" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#cfe8d6"/>
+      <stop offset="100%" stop-color="#9fcdb0"/>
+    </linearGradient>
+    <linearGradient id="g-frm" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1200" height="800" fill="url(#g-sky)" />
+
+  <!-- Soft sun glow -->
+  <circle cx="980" cy="120" r="100" fill="#fff3c4" opacity="0.25" />
+
+  <!-- Distant mountains (subtle) -->
+  <g transform="translate(0,160)">
+    <path d="M0,520 L220,280 L420,520 Z" fill="#8fb994" opacity="0.55" />
+    <path d="M320,520 L520,260 L720,520 Z" fill="#78b07f" opacity="0.6" />
+    <path d="M640,520 L860,300 L1080,520 Z" fill="#5f9c66" opacity="0.65" />
+  </g>
+
+  <!-- Foreground rolling hill -->
+  <path d="M0,600 C200,520 400,560 600,520 C800,480 1000,540 1200,520 L1200,800 L0,800 Z" fill="url(#g-mt)" />
+
+  <!-- Hot air balloon (minimal) -->
+  <g transform="translate(160,140) scale(0.9)">
+    <ellipse cx="680" cy="160" rx="60" ry="48" fill="#ffd7a8" opacity="0.95" />
+    <path d="M640 200 C660 220 700 220 720 200 L700 260 L660 260 Z" fill="#ffb87a" />
+    <rect x="680" y="260" width="28" height="26" rx="4" fill="#7a4d3b" />
+    <line x1="664" y1="210" x2="688" y2="262" stroke="#7a4d3b" stroke-width="2" stroke-linecap="round" />
+    <line x1="712" y1="210" x2="712" y2="262" stroke="#7a4d3b" stroke-width="2" stroke-linecap="round" />
+  </g>
+
+  <!-- Negative space center: keep middle area light and minimal -->
+  <rect x="300" y="180" width="600" height="300" fill="url(#g-frm)" />
+
+  <!-- Decorative minimal clouds -->
+  <g fill="#ffffff" opacity="0.85">
+    <ellipse cx="360" cy="140" rx="48" ry="18" />
+    <ellipse cx="410" cy="130" rx="32" ry="12" />
+    <ellipse cx="460" cy="145" rx="40" ry="14" />
+  </g>
+
+  <!-- Simple foreground accent (path) -->
+  <path d="M120,620 C260,560 440,600 600,580 C760,560 940,600 1080,560" stroke="#e6fff0" stroke-width="4" fill="none" opacity="0.6" stroke-linecap="round" />
+
+</svg>

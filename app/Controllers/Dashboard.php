@@ -34,12 +34,27 @@ class Dashboard extends BaseController
             }
         }
 
+        $db = \Config\Database::connect();
+
+        // low availability in next 7 days (remaining <= 5)
+        $lowBuilder = $db->table('tbl_availability a')
+            ->select('a.*, d.nama_destinasi, (a.capacity - a.booked) AS remaining')
+            ->join('tbl_destinasi d', "d.id_destinasi COLLATE utf8mb4_general_ci = a.destinasi_kode COLLATE utf8mb4_general_ci", 'LEFT', false)
+            ->where('a.is_delete', '0')
+            ->where('a.date >=', date('Y-m-d'))
+            ->where("(a.capacity - a.booked) <= 5", null, false)
+            ->orderBy('a.date', 'ASC')
+            ->limit(5);
+
+        $lowAvailability = $lowBuilder->get()->getResultArray();
+
         $data = [
             'title'         => 'Dashboard',
             'totalTiket'    => $totalTiket,
             'totalBerhasil' => $totalBerhasil,
             'recentHistory' => array_slice($allTransaksi, 0, 5),
-            'user'          => $this->modelPengunjung->getPengunjungById($idUser)
+            'user'          => $this->modelPengunjung->getPengunjungById($idUser),
+            'lowAvailability' => $lowAvailability
         ];
 
         return view('visitor/dashboard/index', $data);

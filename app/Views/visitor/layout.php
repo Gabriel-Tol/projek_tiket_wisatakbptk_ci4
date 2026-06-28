@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +13,13 @@
     <script src="<?= base_url('Assets/js/html5shiv.js') ?>"></script>
     <script src="<?= base_url('Assets/js/respond.min.js') ?>"></script>
     <![endif]-->
+
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     
     <?= $this->renderSection('styles') ?>
 </head>
@@ -26,9 +33,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="<?= base_url() ?>"><span>WISATA</span>CI4</a>
+                <a class="navbar-brand" href="<?= base_url() ?>"><span>WISATA</span>KALBAR</a>
                 <ul class="user-menu">
-                    <li class="dropdown pull-right">
+                    <li class="dropdown pull-right" style="display: flex; align-items: center; gap: 10px;">
+                        <button id="darkModeToggle" class="btn btn-xs btn-default" title="Toggle Dark Mode" style="border: none; font-size: 16px;">
+                            <span id="darkModeIcon">🌙</span>
+                        </button>
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <span class="glyphicon glyphicon-user"></span> <?= session()->get('nama_pengunjung') ?> <span class="caret"></span>
                         </a>
@@ -55,6 +65,9 @@
             </li>
             <li class="<?= url_is('user/profile*') ? 'active' : '' ?>">
                 <a href="<?= base_url('user/profile') ?>"><span class="glyphicon glyphicon-user"></span> Akun Saya</a>
+            </li>
+            <li>
+                <a href="<?= base_url('auth/logout') ?>"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
             </li>
         </ul>
     </div><!--/.sidebar-->
@@ -94,6 +107,30 @@
         $(window).on('resize', function () {
           if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
         })
+        
+        // Dark Mode Toggle
+        var currentTheme = localStorage.getItem('theme') || 'light';
+        
+        function updateIcon(theme) {
+            var icon = $('#darkModeIcon');
+            if (theme === 'dark') {
+                icon.text('☀️');
+            } else {
+                icon.text('🌙');
+            }
+        }
+        
+        updateIcon(currentTheme);
+        
+        $('#darkModeToggle').on('click', function() {
+            var html = document.documentElement;
+            var current = html.getAttribute('data-theme');
+            var next = current === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateIcon(next);
+        });
     </script>    
     <?= $this->renderSection('scripts') ?>
 </body>

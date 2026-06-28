@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Minimal vector: majestic mountains and rolling green hills, pastel gradient sky, plenty of negative center space -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e8f7ff" />
+      <stop offset="100%" stop-color="#f5fbff" />
+    </linearGradient>
+    <linearGradient id="hill" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#c8f0d1" />
+      <stop offset="100%" stop-color="#89c986" />
+    </linearGradient>
+    <linearGradient id="mount" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#9ec9d6" />
+      <stop offset="100%" stop-color="#6aa6b3" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="28" flood-color="#000" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Sky background -->
+  <rect width="1200" height="800" fill="url(#sky)" />
+
+  <!-- Distant mountains (center-left) -->
+  <g transform="translate(60,60)" filter="url(#softShadow)">
+    <path d="M120,520 L300,220 L460,520 Z" fill="url(#mount)" />
+    <path d="M340,520 L520,200 L700,520 Z" fill="#7fb1c1" opacity="0.95" />
+    <path d="M560,520 L740,260 L920,520 Z" fill="#6aa6b3" opacity="0.98" />
+  </g>
+
+  <!-- Rolling green hills foreground (large negative space center-left to center-right) -->
+  <path d="M0,600 C180,520 360,560 540,520 C720,480 900,540 1200,520 L1200,800 L0,800 Z" fill="url(#hill)" />
+
+  <!-- Midground soft hill shapes for depth -->
+  <path d="M80,660 C220,600 380,640 540,610 C700,580 860,640 1100,600 L1100,740 L80,740 Z" fill="#b7e7ba" opacity="0.9" />
+
+  <!-- Subtle ridge lines for visual interest (very minimal) -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1.6">
+    <path d="M160,640 C300,600 420,620 560,600 C700,580 860,620 1000,600" />
+  </g>
+
+  <!-- Large empty area in center intentionally left clear for UI overlay -->
+  <rect x="360" y="200" width="480" height="260" fill="transparent" />
+
+</svg>

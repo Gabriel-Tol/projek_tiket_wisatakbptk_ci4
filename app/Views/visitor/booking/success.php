@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 <div class="row">
+    <div class="col-lg-12" style="margin-bottom: 15px;">
+        <a href="<?= base_url('user/dashboard'); ?>" class="btn btn-default">
+            <span class="glyphicon glyphicon-arrow-left"></span> Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-10 col-md-offset-1">
         <div class="alert bg-success" role="alert" style="color: #fff; padding: 25px; margin-bottom: 30px; border: none;">
             <span class="glyphicon glyphicon-ok-sign" style="font-size: 30px; margin-right: 15px; vertical-align: middle;"></span>

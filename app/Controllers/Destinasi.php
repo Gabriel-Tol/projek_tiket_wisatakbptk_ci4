@@ -56,6 +56,21 @@ class Destinasi extends BaseController
             'kategori'  => $this->modelKategori->where('id_kategori', $destinasi['id_kategori'])->first()
         ];
 
+        return view('detail_wisata', $data);
+    }
+
+    public function detailCustomer($id)
+    {
+        $destinasi = $this->modelDestinasi->getDestinasiById($id);
+        if (!$destinasi) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $data = [
+            'destinasi' => $destinasi,
+            'kategori'  => $this->modelKategori->where('id_kategori', $destinasi['id_kategori'])->first()
+        ];
+
         return view('visitor/destinasi/detail', $data);
     }
 }

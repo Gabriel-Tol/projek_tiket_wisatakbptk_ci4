@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Sky gradient - smooth pastel -->
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e0f0ff"/>
+      <stop offset="35%" stop-color="#d4e8f9"/>
+      <stop offset="65%" stop-color="#f5e6d3"/>
+      <stop offset="100%" stop-color="#fce4d6"/>
+    </linearGradient>
+    <!-- Sun glow -->
+    <radialGradient id="sunGlow" cx="0.7" cy="0.35" r="0.35">
+      <stop offset="0%" stop-color="#fff5e6" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#ffe8cc" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ffe8cc" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Far mountain gradient -->
+    <linearGradient id="mtnFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a8c4d8"/>
+      <stop offset="100%" stop-color="#b8d0e0"/>
+    </linearGradient>
+    <!-- Mid mountain gradient -->
+    <linearGradient id="mtnMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7fa8b8"/>
+      <stop offset="100%" stop-color="#8fb8c8"/>
+    </linearGradient>
+    <!-- Near mountain gradient -->
+    <linearGradient id="mtnNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5a8a6a"/>
+      <stop offset="100%" stop-color="#6a9a7a"/>
+    </linearGradient>
+    <!-- Hill gradient 1 -->
+    <linearGradient id="hill1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7cb87c"/>
+      <stop offset="100%" stop-color="#6aad6a"/>
+    </linearGradient>
+    <!-- Hill gradient 2 -->
+    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5da05d"/>
+      <stop offset="100%" stop-color="#4d904d"/>
+    </linearGradient>
+    <!-- Foreground hill -->
+    <linearGradient id="hillFg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a8a4a"/>
+      <stop offset="100%" stop-color="#3a7a3a"/>
+    </linearGradient>
+    <!-- Water reflection -->
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8ab8d0" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#a0c8e0" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky background -->
+  <rect width="800" height="500" fill="url(#sky)"/>
+
+  <!-- Sun glow -->
+  <circle cx="560" cy="175" r="180" fill="url(#sunGlow)"/>
+  <!-- Sun disc -->
+  <circle cx="560" cy="175" r="38" fill="#fff5e6" opacity="0.95"/>
+
+  <!-- Far mountains (lightest, most distant) -->
+  <path d="M0 320 L80 230 L140 260 L200 190 L260 240 L320 200 L380 250 L440 180 L500 220 L560 170 L620 210 L680 230 L740 195 L800 230 L800 500 L0 500 Z" fill="url(#mtnFar)" opacity="0.5"/>
+
+  <!-- Mid mountains -->
+  <path d="M0 350 L60 280 L120 310 L180 250 L240 290 L300 260 L360 300 L420 240 L480 275 L540 230 L600 270 L660 290 L720 255 L800 280 L800 500 L0 500 Z" fill="url(#mtnMid)" opacity="0.6"/>
+
+  <!-- Near mountains (darkest) -->
+  <path d="M0 380 L50 320 L100 345 L150 300 L210 330 L270 295 L330 335 L390 305 L450 340 L510 310 L570 335 L630 300 L690 330 L750 310 L800 340 L800 500 L0 500 Z" fill="url(#mtnNear)" opacity="0.7"/>
+
+  <!-- Rolling green hills - back -->
+  <path d="M0 400 Q100 360 200 385 Q300 350 400 375 Q500 345 600 370 Q700 355 800 380 L800 500 L0 500 Z" fill="url(#hill1)" opacity="0.75"/>
+
+  <!-- Rolling green hills - mid -->
+  <path d="M0 420 Q120 385 240 405 Q360 375 480 400 Q600 370 720 395 Q760 385 800 400 L800 500 L0 500 Z" fill="url(#hill2)" opacity="0.8"/>
+
+  <!-- Small lake/water reflection -->
+  <ellipse cx="400" cy="430" rx="120" ry="20" fill="url(#water)" opacity="0.5"/>
+
+  <!-- Foreground rolling hill -->
+  <path d="M0 460 Q200 420 400 445 Q600 425 800 450 L800 500 L0 500 Z" fill="url(#hillFg)" opacity="0.85"/>
+
+  <!-- Subtle tree silhouettes on foreground -->
+  <g opacity="0.3" fill="#3a7a3a">
+    <ellipse cx="80" cy="448" rx="12" ry="18"/>
+    <ellipse cx="100" cy="445" rx="10" ry="15"/>
+    <ellipse cx="700" cy="442" rx="14" ry="20"/>
+    <ellipse cx="720" cy="445" rx="10" ry="14"/>
+    <ellipse cx="350" cy="440" rx="8" ry="12"/>
+    <ellipse cx="500" cy="438" rx="10" ry="14"/>
+  </g>
+</svg>
